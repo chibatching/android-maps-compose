@@ -115,18 +115,21 @@ internal class MapApplier(
                 val markerDragState =
                     decorations.nodeForMarker(marker)?.markerDragState
                 markerDragState?.dragState = DragState.DRAG
+                markerDragState?.marker = marker
             }
 
             override fun onMarkerDragEnd(marker: Marker) {
                 val markerDragState =
                     decorations.nodeForMarker(marker)?.markerDragState
                 markerDragState?.dragState = DragState.END
+                markerDragState?.marker = marker
             }
 
             override fun onMarkerDragStart(marker: Marker) {
                 val markerDragState =
                     decorations.nodeForMarker(marker)?.markerDragState
                 markerDragState?.dragState = DragState.START
+                markerDragState?.marker = marker
             }
         })
         map.setInfoWindowAdapter(

@@ -60,6 +60,12 @@ class MarkerDragState {
      */
     var dragState: DragState by mutableStateOf(DragState.END)
         internal set
+
+    /**
+     * Object of dragged marker.
+     */
+    var marker: Marker? by mutableStateOf(null)
+        internal set
 }
 
 /**
