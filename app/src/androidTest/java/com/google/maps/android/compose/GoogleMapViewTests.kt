@@ -1,3 +1,17 @@
+// Copyright 2022 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package com.google.maps.android.compose
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,10 +21,12 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.annotation.UiThreadTest
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -72,7 +88,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertFalse(cameraPositionState.isMoving)
@@ -136,7 +152,7 @@ class GoogleMapViewTests {
             composeTestRule.waitUntil(1000) {
                 cameraPositionState.isMoving
             }
-            composeTestRule.waitUntil(1000) {
+            composeTestRule.waitUntil(3000) {
                 !cameraPositionState.isMoving
             }
             assertEquals(
@@ -147,7 +163,32 @@ class GoogleMapViewTests {
         }
     }
 
-    private fun zoom(shouldAnimate: Boolean, zoomIn: Boolean, assertionBlock: () -> Unit) {
+    @Test
+    @UiThreadTest
+    fun testLatLngInVisibleRegion() {
+        val projection = cameraPositionState.projection
+        assertNotNull(projection)
+        assertTrue(
+            projection!!.visibleRegion.latLngBounds.contains(startingPosition)
+        )
+    }
+
+    @Test
+    @UiThreadTest
+    fun testLatLngNotInVisibleRegion() {
+        val projection = cameraPositionState.projection
+        assertNotNull(projection)
+        val latLng = LatLng(23.4, 25.6)
+        assertFalse(
+            projection!!.visibleRegion.latLngBounds.contains(latLng)
+        )
+    }
+
+    private fun zoom(
+        shouldAnimate: Boolean,
+        zoomIn: Boolean,
+        assertionBlock: () -> Unit
+    ) {
         if (!shouldAnimate) {
             composeTestRule.onNodeWithTag("cameraAnimations")
                 .assertIsDisplayed()
